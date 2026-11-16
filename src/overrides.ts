@@ -42,16 +42,34 @@ import type { IntClosedRange, TupleOf } from "type-fest";
  * Any override added here will be used instead of the value in {@linkcode DefaultOverrides}.
  *
  * If an override name starts with "STARTING", it will only apply when a new run begins.
- *
- * @example
- * ```
- * const overrides = {
- *   ABILITY_OVERRIDE: AbilityId.PROTEAN,
- *   PASSIVE_ABILITY_OVERRIDE: AbilityId.PIXILATE,
- * }
- * ```
  */
-const overrides = {} satisfies Partial<InstanceType<OverridesType>>;
+const overrides = {
+  // Taux de shiny à 1/32 dès la vague 1 (4 Charmes Chroma)
+  STARTING_MODIFIER_OVERRIDE: [
+    { name: "SHINY_CHARM", count: 4 },
+  ],
+  // Boutique et relances gratuites + argent de départ
+  STARTING_MONEY_OVERRIDE: 50000,
+  WAIVE_SHOP_FEES_OVERRIDE: true,
+  WAIVE_ROLL_FEE_OVERRIDE: true,
+  // Pokéballs de départ personnalisées
+  POKEBALL_OVERRIDE: {
+    active: true,
+    pokeballs: {
+      [PokeballType.POKEBALL]: 10,
+      [PokeballType.GREAT_BALL]: 10,
+      [PokeballType.ULTRA_BALL]: 20,
+      [PokeballType.ROGUE_BALL]: 10,
+      [PokeballType.MASTER_BALL]: 5,
+    },
+  },
+  // Tirages Gacha gratuits, stock illimité et éclosion immédiate
+  EGG_FREE_GACHA_PULLS_OVERRIDE: true,
+  EGG_IMMEDIATE_HATCH_OVERRIDE: true,
+  UNLIMITED_EGG_COUNT_OVERRIDE: true,
+  // Multiplicateur d'XP x5
+  XP_MULTIPLIER_OVERRIDE: 5,
+} satisfies Partial<InstanceType<OverridesType>>;
 
 /**
  * If you need to add Overrides values for local testing do that inside {@linkcode overrides}
@@ -296,18 +314,6 @@ class DefaultOverrides {
    * a {@linkcode ModifierTypeGenerator} and require pre-generation arguments to get
    * a specific item from that group. If a type is not set, the generator will either
    * use the party to weight item choice or randomly pick an item.
-   *
-   * @example
-   * ```
-   * // Will have a quantity of 2 in-game
-   * STARTING_MODIFIER_OVERRIDE = [{name: "EXP_SHARE", count: 2}]
-   * // Will have a quantity of 1 in-game
-   * STARTING_HELD_ITEMS_OVERRIDE = [{name: "LUCKY_EGG"}]
-   * // Type must be given to get a specific berry
-   * STARTING_HELD_ITEMS_OVERRIDE = [{name: "BERRY", type: BerryType.SITRUS}]
-   * // A random berry will be generated at runtime
-   * STARTING_HELD_ITEMS_OVERRIDE = [{name: "BERRY"}]
-   * ```
    */
   readonly STARTING_MODIFIER_OVERRIDE: ModifierOverride[] = [];
   /**
